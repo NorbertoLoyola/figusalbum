@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Recuperar álbum</title>
+<style>
+  body { margin:0; background:#0a0a0c; color:#f7f4ec; font-family: system-ui, sans-serif; padding:24px; }
+  h1 { font-size:20px; }
+  p { font-size:14px; color:#cbb790; line-height:1.5; }
+  .box { background:#1c1a16; border:2px solid #D4AF37; border-radius:14px; padding:16px; margin-top:16px; }
+  button { width:100%; border:none; border-radius:8px; padding:12px; background:#D4AF37; color:#0a0a0c; font-weight:800; font-size:15px; cursor:pointer; margin-top:8px; }
+  button:disabled { opacity:.5; }
+  .error { color:#ff8a75; }
+  .ok { color:#a6e3c4; }
+</style>
+</head>
+<body>
+<h1>Recuperar álbum</h1>
+<p id="status">Buscando tus datos guardados en este celular...</p>
+<div id="box" style="display:none;" class="box"></div>
+
+<script>
+const FIREBASE_URL = "https://figusalbum-72bc0-default-rtdb.firebaseio.com";
+
+function statsDe(data){
+  let total=0, tengo=0;
+  for(const code in data){
+    for(const n in data[code]){
+      total++;
+      if(data[code][n]==="tengo") tengo++;
+    }
+  }
+  return { total, pct: total ? Math.round((tengo/total)*100) : 0 };
+}
+
+async function main(){
+  const status = document.getElementById("status");
+  const userId = localStorage.getItem("album_user_id");
+  if(!userId){
+    status.innerHTML = '<span class="error">Este celular no tiene un ID viejo guardado (album_user_id). Este no es el dispositivo que tenía el progreso aislado, o ya fue migrado antes.</span>';
+    return;
+  }
+  status.textContent = "Encontré un ID viejo (" + userId + "). Buscando los datos asociados...";
+  try{
+    const res = await fetch(FIREBASE_URL + "/" + userId + ".json");
+    const oldData = await res.json();
+    if(!oldData){
+      status.innerHTML = '<span class="error">El ID existe pero no tiene datos guardados en Firebase.</span>';
+      return;
+    }
+    const s = statsDe(oldData);
+    status.innerHTML = '<span class="ok">Encontrado. Este dispositivo tenía ' + s.pct + '% del álbum (tengo ' + (s.total - Math.round(s.total*(100-s.pct)/100)) + ' de ' + s.total + ' registros en "tengo").</span>';
+    const box = document.getElementById("box");
+    box.style.display = "block";
+    box.innerHTML = '<p>¿Restaurar esto como el álbum compartido? Esto va a reemplazar lo que estén viendo los demás ahora mismo (99%) por tu progreso real.</p><button id="restaurar-btn">Restaurar como álbum compartido</button><p id="restaurar-status"></p>';
+    document.getElementById("restaurar-btn").addEventListener("click", async () => {
+      const btn = document.getElementById("restaurar-btn");
+      btn.disabled = true;
+      btn.textContent = "Restaurando...";
+      try{
+        const putRes = await fetch(FIREBASE_URL + "/data.json", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(oldData)
+        });
+        if(!putRes.ok) throw new Error("status " + putRes.status);
+        document.getElementById("restaurar-status").innerHTML = '<span class="ok">¡Listo! Ya está restaurado. Andá al álbum y refrescá.</span>';
+        btn.textContent = "Restaurado ✓";
+      }catch(e){
+        document.getElementById("restaurar-status").innerHTML = '<span class="error">Error al restaurar: ' + e.message + '</span>';
+        btn.disabled = false;
+        btn.textContent = "Restaurar como álbum compartido";
+      }
+    });
+  }catch(e){
+    status.innerHTML = '<span class="error">Error buscando los datos: ' + e.message + '</span>';
+  }
+}
+main();
+</script>
+</body>
+</html>
