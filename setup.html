@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Configurar álbum compartido</title>
+<style>
+  body { margin:0; background:#0f3d2e; color:#f6f1e4; font-family: system-ui, sans-serif; padding:24px; }
+  h1 { font-size:20px; }
+  .box { background:#12362a; border:2px solid #f2b705; border-radius:14px; padding:16px; margin-top:16px; }
+  .id { font-family: monospace; font-size:18px; background:#0f3d2e; padding:12px; border-radius:8px; word-break:break-all; margin:12px 0; border:1px solid #2a5c47; }
+  button { width:100%; border:none; border-radius:8px; padding:12px; background:#f2b705; color:#0f3d2e; font-weight:800; font-size:15px; cursor:pointer; }
+  .status { font-size:14px; color:#a6e3c4; }
+  .error { color:#ff9d8a; }
+</style>
+</head>
+<body>
+<h1>Configurando el álbum compartido...</h1>
+<p class="status" id="status">Creando el almacén de datos, esperá un segundo.</p>
+<div class="box" id="result" style="display:none;">
+  <p>Listo. Copiá este código y pasáselo a Claude para terminar la configuración:</p>
+  <div class="id" id="blob-id"></div>
+  <button id="copy-btn">Copiar código</button>
+</div>
+
+<script>
+const SECCIONES_CODES = ["FWC","MEX","RSA","KOR","CZE","CAN","BIH","QAT","SUI","BRA","MAR","HAI","SCO","USA","PAR","AUS","TUR","GER","CUW","CIV","ECU","NED","JPN","SWE","TUN","BEL","EGY","IRN","NZL","ESP","CPV","KSA","URU","FRA","SEN","IRQ","NOR","ARG","ALG","AUT","JOR","POR","COD","UZB","COL","ENG","CRO","GHA","PAN","CC"];
+const TOTAL = 20;
+
+function estadoInicial(){
+  const d = {};
+  for(const code of SECCIONES_CODES){
+    d[code] = {};
+    for(let n=1;n<=TOTAL;n++) d[code][n] = "tengo";
+  }
+  return d;
+}
+
+async function crear(){
+  try{
+    const res = await fetch("https://jsonblob.com/api/jsonBlob", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(estadoInicial())
+    });
+    if(!res.ok) throw new Error("No se pudo crear (status " + res.status + ")");
+    const location = res.headers.get("Location");
+    const id = location.split("/").pop();
+    document.getElementById("status").textContent = "";
+    document.getElementById("blob-id").textContent = id;
+    document.getElementById("result").style.display = "block";
+    document.getElementById("copy-btn").addEventListener("click", async ()=>{
+      try{ await navigator.clipboard.writeText(id); }catch(e){}
+      document.getElementById("copy-btn").textContent = "¡Copiado!";
+    });
+  }catch(e){
+    document.getElementById("status").innerHTML = '<span class="error">Hubo un error creando el almacén: ' + e.message + '. Probá recargar la página.</span>';
+  }
+}
+crear();
+</script>
+</body>
+</html>
