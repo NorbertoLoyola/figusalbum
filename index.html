@@ -4,136 +4,184 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <title>Álbum Mundial 2026 - Oficial</title>
+  <title>Álbum Mundial 2026</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#56042c" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&family=JetBrains+Mono:wght@500;700&display=swap');
-
-    :root {
-      --mundial-maroon: #8a1538;
-      --mundial-dark: #36021b;
-      --mundial-gold: #d4af37;
-      --mundial-cream: #f6f1e4;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
 
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* ESTILO ÁLBUM MUNDIALISTA PREMIUM (Maroon & Gold Panini Style) */
     body {
       margin: 0;
-      background: var(--mundial-dark);
-      color: var(--mundial-cream);
-      font-family: 'Poppins', sans-serif;
+      background: #1e0210;
+      /* Fondo guinda oscuro texturado */
+      color: #f6f1e4;
+      font-family: system-ui, sans-serif;
     }
 
+    .display {
+      font-family: 'Baloo 2', system-ui, sans-serif;
+    }
+
+    .data {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* HEADER ESTILO TAPA DE ÁLBUM OFICIAL */
     .header {
       position: sticky;
       top: 0;
       z-index: 20;
-      background: rgba(54, 2, 27, 0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 4px solid var(--mundial-gold);
-      padding: 20px 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      background: rgba(42, 3, 21, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 4px solid #d4af37;
+      padding: 20px 16px 16px;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5);
     }
 
     h1 {
-      font-size: 22px;
+      font-weight: 800;
+      font-size: 24px;
       margin: 0;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #fff;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      color: #ffffff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
     }
 
     .pct {
-      color: var(--mundial-gold);
-      font-size: 14px;
+      color: #1e0210;
+      background: #d4af37;
+      font-size: 12px;
       font-weight: 800;
-      float: right;
+      padding: 2px 8px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
+    /* BARRA DE PROGRESO DE LUJO CORRIDA CON DEGRADADO */
     .bar {
       margin-top: 10px;
       height: 12px;
       border-radius: 999px;
-      background: #1a010d;
-      border: 1px solid var(--mundial-maroon);
+      background: #12000a;
+      border: 1px solid #4a0624;
       overflow: hidden;
-      clear: both;
     }
 
     .bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--mundial-maroon), var(--mundial-gold));
-      transition: width .5s ease-out;
+      background: linear-gradient(90deg, #d4af37, #fff6a3);
+      transition: width .4s;
     }
 
+    /* ESTADÍSTICAS COMO STICKERS */
     .stats {
-      margin-top: 15px;
+      margin-top: 14px;
       display: flex;
-      gap: 10px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
     }
 
     .chip {
       padding: 5px 10px;
       border-radius: 6px;
-      font-weight: 700;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
       text-transform: uppercase;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      letter-spacing: 0.5px;
     }
 
     .chip.falta {
       background: #c0392b;
+      border: 1px solid #e05c47;
       color: #fff;
     }
 
     .chip.repe {
-      background: var(--mundial-gold);
-      color: #000;
+      background: #d4af37;
+      border: 1px solid #fff099;
+      color: #1e0210;
     }
 
     .chip.tengo {
       background: #2e7d4f;
+      border: 1px solid #42b876;
       color: #fff;
     }
 
-    .search {
-      margin-top: 15px;
+    /* INPUTS Y BOTONES DEL ÁLBUM */
+    input.search {
+      margin-top: 14px;
       width: 100%;
       border-radius: 8px;
-      background: #240112;
-      border: 2px solid var(--mundial-maroon);
-      padding: 12px;
-      color: #fff;
+      background: #2a0315;
+      border: 1px solid #5c0b31;
+      padding: 11px 14px;
+      color: #f6f1e4;
       font-size: 14px;
       outline: none;
+      transition: border 0.2s;
     }
 
-    .search:focus {
-      border-color: var(--mundial-gold);
+    input.search:focus {
+      border-color: #d4af37;
+      box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+    }
+
+    .tabs {
+      margin-top: 10px;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .tab {
+      flex-shrink: 0;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #2a0315;
+      color: #f2d377;
+      border: 1px solid #5c0b31;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: #d4af37;
+      color: #1e0210;
+      border-color: #d4af37;
+      font-weight: 800;
+      box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
     }
 
     .list {
       padding: 16px;
-      padding-bottom: 100px;
+      padding-bottom: 64px;
+      max-width: 650px;
+      margin: 0 auto;
     }
 
     .card {
-      border-radius: 12px;
-      border: 1px solid var(--mundial-maroon);
-      background: #4a0e2e;
-      margin-bottom: 15px;
+      border-radius: 14px;
+      border: 2px solid #5c0b31;
+      background: #3d0720;
+      margin-bottom: 14px;
       overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
     .card.completa {
-      border-color: var(--mundial-gold);
-      border-width: 2px;
+      border-color: #d4af37;
+      background: linear-gradient(145deg, #3d0720, #540c2e);
     }
 
     .card-head {
@@ -141,130 +189,329 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 15px;
+      padding: 14px 16px;
       background: none;
       border: none;
       color: inherit;
+      text-align: left;
       cursor: pointer;
     }
 
     .name {
       font-weight: 800;
-      font-size: 18px;
-      text-align: left;
+      font-size: 19px;
+      color: #ffffff;
     }
 
     .code {
-      font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
-      color: var(--mundial-gold);
+      color: #d4af37;
+      font-weight: 700;
+      letter-spacing: .05em;
+    }
+
+    .badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .badge.falta {
+      background: rgba(192, 57, 43, .3);
+      color: #ff9d8a;
+      border: 1px solid rgba(192, 57, 43, .8);
+    }
+
+    .badge.repe {
+      background: rgba(212, 175, 55, .25);
+      color: #f2d377;
+      border: 1px solid #d4af37;
     }
 
     .body {
-      padding: 0 15px 15px;
+      padding: 0 16px 16px;
       display: none;
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(0, 0, 0, 0.15);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .body.open {
       display: block;
     }
 
+    /* DISEÑO DE CORTE CUADRÍCULA DE CROMOS */
     .grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin: 15px 0;
+      gap: 10px;
+      margin-top: 14px;
+      margin-bottom: 12px;
     }
 
-    /* ESTILO CROMO / FIGURITA */
     .num {
-      aspect-ratio: 3/4;
-      border-radius: 4px;
-      border: 1px solid #555;
+      aspect-ratio: 1;
+      border-radius: 6px;
+      border: 2px solid;
       font-weight: 800;
-      font-size: 13px;
+      font-size: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      position: relative;
-      transition: transform 0.1s;
+      user-select: none;
+      transition: all 0.1s ease;
     }
 
-    .num:active {
-      transform: scale(0.9);
-    }
-
+    /* Casillero vacío del álbum */
     .num.falta {
-      background: #240112;
-      border-color: #56042c;
-      color: rgba(255, 255, 255, 0.2);
+      background: #1e0210;
+      border-color: #5c0b31;
+      color: rgba(246, 241, 228, 0.2);
     }
 
-    /* Figurita Pegada */
+    /* Cromo Físico pegado impecable */
     .num.tengo {
-      background: #fff;
-      border-color: #ddd;
-      color: var(--mundial-maroon);
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      background: #ffffff;
+      border-color: #d4af37;
+      color: #3d0720;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 0 4px rgba(212, 175, 55, 0.3);
+      transform: translateY(-1px);
     }
 
-    /* Figurita Brillante / Repetida */
+    /* Cromo Especial Brillante Repetido */
     .num.repe {
-      background: linear-gradient(135deg, #f2b705, #fffbcf);
-      border-color: #fff;
-      color: #36021b;
-      box-shadow: 0 0 10px rgba(212, 175, 55, 0.5), 2px 2px 5px rgba(0, 0, 0, 0.4);
-      z-index: 2;
+      background: linear-gradient(135deg, #d4af37, #fff099);
+      border-color: #ffffff;
+      color: #1e0210;
+      box-shadow: 0 4px 10px rgba(212, 175, 55, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #f2d377;
+      margin-bottom: 12px;
+      text-align: center;
+      font-style: italic;
+    }
+
+    .bulk {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 12px;
+    }
+
+    .bulk label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #f2d377;
+      margin-bottom: 4px;
+    }
+
+    .bulk input {
+      width: 100%;
+      border-radius: 8px;
+      background: #1e0210;
+      border: 1px solid #5c0b31;
+      padding: 8px 12px;
+      color: #f6f1e4;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 10px;
+    }
+
+    .bulk input:focus {
+      border-color: #d4af37;
     }
 
     .apply {
       width: 100%;
       border: none;
       border-radius: 8px;
-      background: var(--mundial-gold);
-      color: #000;
+      background: #d4af37;
+      color: #1e0210;
       font-weight: 800;
-      padding: 12px;
-      margin-top: 10px;
+      padding: 11px;
+      font-size: 14px;
       cursor: pointer;
       text-transform: uppercase;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
     }
 
     .apply:active {
-      transform: scale(0.98);
+      transform: scale(.97);
+    }
+
+    .empty {
+      text-align: center;
+      color: #f2d377;
+      font-size: 14px;
+      padding: 40px 0;
+    }
+
+    .star {
+      color: #d4af37;
+      font-size: 16px;
+    }
+
+    .share-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .share-btn {
+      flex: 1;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .share-btn.falta {
+      background: #c0392b;
+      color: #fff;
+    }
+
+    .share-btn.repe {
+      background: #d4af37;
+      color: #1e0210;
+    }
+
+    .share-btn:active {
+      transform: scale(.97);
+    }
+
+    /* MODALES REFORMADOS */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 20px;
+      backdrop-filter: blur(3px);
+    }
+
+    .modal {
+      background: #3d0720;
+      border: 3px solid #d4af37;
+      border-radius: 14px;
+      padding: 20px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal p {
+      font-size: 13px;
+      color: #f6f1e4;
+      margin-top: 0;
+    }
+
+    .modal input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #5c0b31;
+      background: #1e0210;
+      color: #f6f1e4;
+      font-size: 12px;
+      font-family: monospace;
+      margin-bottom: 12px;
+    }
+
+    .modal button {
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      padding: 11px;
+      background: #d4af37;
+      color: #1e0210;
+      font-weight: 800;
+      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
-
   <div id="root"></div>
-
   <script>
+    // SECCIONES COMPLETAS ORIGINALES CONSERVADAS
     const SECCIONES = [
       ["FWC", "Copa Mundial"], ["MEX", "México"], ["RSA", "Sudáfrica"], ["KOR", "Corea del Sur"],
-      ["BRA", "Brasil"], ["ARG", "Argentina"], ["FRA", "Francia"], ["GER", "Alemania"],
-      ["ESP", "España"], ["ITA", "Italia"], ["ENG", "Inglaterra"], ["NED", "Países Bajos"],
-      ["URU", "Uruguay"], ["USA", "USA"], ["CAN", "Canadá"], ["PAN", "Panamá"], ["CC", "Coca Cola"]
+      ["CZE", "Rep. Checa"], ["CAN", "Canadá"], ["BIH", "Bosnia"], ["QAT", "Catar"],
+      ["SUI", "Suiza"], ["BRA", "Brasil"], ["MAR", "Marruecos"], ["HAI", "Haití"],
+      ["SCO", "Escocia"], ["USA", "Estados Unidos"], ["PAR", "Paraguay"], ["AUS", "Australia"],
+      ["TUR", "Turquía"], ["GER", "Alemania"], ["CUW", "Curazao"], ["CIV", "Costa de Marfil"],
+      ["ECU", "Ecuador"], ["NED", "Países Bajos"], ["JPN", "Japón"], ["SWE", "Suecia"],
+      ["TUN", "Túnez"], ["BEL", "Bélgica"], ["EGY", "Egipto"], ["IRN", "Irán"],
+      ["NZL", "Nueva Zelanda"], ["ESP", "España"], ["CPV", "Cabo Verde"], ["KSA", "Arabia Saudita"],
+      ["URU", "Uruguay"], ["FRA", "Francia"], ["SEN", "Senegal"], ["IRQ", "Irak"],
+      ["NOR", "Noruega"], ["ARG", "Argentina"], ["ALG", "Argelia"], ["AUT", "Austria"],
+      ["JOR", "Jordania"], ["POR", "Portugal"], ["COD", "RD Congo"], ["UZB", "Uzbekistán"],
+      ["COL", "Colombia"], ["ENG", "Inglaterra"], ["CRO", "Croacia"], ["GHA", "Ghana"],
+      ["PAN", "Panamá"], ["CC", "Especiales"]
     ];
     const TOTAL = 20;
-    const KEY = "album-mundial-2026-v2";
+    const ESTADOS = ["tengo", "falta", "repe"];
+    const KEY = "album-mundial-2026"; // CLAVE ORIGINAL RESTAURADA
+
+    const FIREBASE_URL = "https://figusalbum-72bc0-default-rtdb.firebaseio.com";
 
     function estadoInicial() {
       const d = {};
       for (const [code] of SECCIONES) {
         d[code] = {};
-        for (let n = 1; n <= TOTAL; n++) d[code][n] = "falta"; // Ahora empieza vacío, más lógico
+        for (let n = 1; n <= TOTAL; n++) d[code][n] = "tengo";
       }
       return d;
     }
+    function cargarLocal() {
+      try {
+        const raw = localStorage.getItem(KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) { }
+      return null;
+    }
+    function guardarLocal(data) {
+      try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { }
+    }
+    async function cargarRemoto() {
+      const res = await fetch(FIREBASE_URL + "/data.json");
+      if (!res.ok) throw new Error("status " + res.status);
+      return await res.json();
+    }
+    async function guardarRemoto(data) {
+      await fetch(FIREBASE_URL + "/data.json", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+    }
+    function parseNumeros(str) {
+      return str.split(/[,\s]+/).map(s => parseInt(s, 10)).filter(n => !isNaN(n) && n >= 1 && n <= TOTAL);
+    }
 
-    let data = JSON.parse(localStorage.getItem(KEY)) || estadoInicial();
-    let query = "";
+    let data = cargarLocal() || estadoInicial();
     let openCode = null;
+    let query = "";
+    let tab = "todas";
+    let conexionOk = true;
 
+    // FIX MATEMÁTICO AL PROBLEMA DEL 100% Y 988 CONTADOR
     function statsGlobales() {
       let falta = 0, repe = 0, tengo = 0, total = 0;
       for (const [code] of SECCIONES) {
@@ -272,87 +519,274 @@
           total++;
           const s = data[code][n];
           if (s === "falta") falta++;
-          else if (s === "repe") { repe++; tengo++; } // FIX: Repe cuenta como Tengo para el %
+          else if (s === "repe") {
+            repe++;
+            tengo++; // Si es repetida, se cuenta que también la posees de base en el álbum
+          }
           else tengo++;
         }
       }
       return { falta, repe, tengo, total, pct: Math.round((tengo / total) * 100) };
     }
 
+    function statsSeccion(code) {
+      let falta = 0, repe = 0;
+      for (let n = 1; n <= TOTAL; n++) {
+        if (data[code][n] === "falta") falta++;
+        if (data[code][n] === "repe") repe++;
+      }
+      return { falta, repe };
+    }
+
     function render() {
-      const g = statsGlobales();
       const root = document.getElementById("root");
+      const g = statsGlobales();
+
+      const secFiltradas = SECCIONES.filter(([code, name]) => {
+        const q = query.toLowerCase();
+        const matches = code.toLowerCase().includes(q) || name.toLowerCase().includes(q);
+        if (!matches) return false;
+        const s = statsSeccion(code);
+        if (tab === "falta") return s.falta > 0;
+        if (tab === "repe") return s.repe > 0;
+        if (tab === "completa") return s.falta === 0;
+        return true;
+      });
 
       root.innerHTML = `
     <div class="header">
       <h1>Álbum Mundial 2026 <span class="pct">${g.pct}%</span></h1>
+      <div class="data" style="font-size:11px; margin-top:2px; color:${conexionOk ? '#f2d377' : '#ff9d8a'};">
+        ${conexionOk ? '● Sincronizado' : '○ Sin conexión (se guardó solo en este celular)'}
+      </div>
       <div class="bar"><div class="bar-fill" style="width:${g.pct}%"></div></div>
       <div class="stats">
         <span class="chip falta">Faltan ${g.falta}</span>
-        <span class="chip tengo">Tengo ${g.tengo}</span>
         <span class="chip repe">Repetidas ${g.repe}</span>
+        <span class="chip tengo">Tengo ${g.tengo}</span>
       </div>
-      <input class="search" id="search" placeholder="Buscar país o código..." value="${query}">
+      <input class="search" id="search" placeholder="Buscar selección..." value="${query.replace(/"/g, '&quot;')}" />
+      <div class="tabs">
+        ${[["todas", "Todas"], ["falta", "Con faltantes"], ["repe", "Con repes"], ["completa", "Completas"]]
+          .map(([k, l]) => `<button class="tab ${tab === k ? 'active' : ''}" data-tab="${k}">${l}</button>`).join("")}
+      </div>
+      <div class="share-bar">
+        <button class="share-btn falta" id="share-falta">🔗 Compartir lo que falta</button>
+        <button class="share-btn repe" id="share-repe">🔗 Compartir repetidas</button>
+      </div>
     </div>
     <div class="list">
-      ${SECCIONES.filter(s => s[1].toLowerCase().includes(query.toLowerCase()) || s[0].toLowerCase().includes(query.toLowerCase()))
-          .map(([code, name]) => {
-            const isOpen = openCode === code;
-            const faltantes = Object.values(data[code]).filter(v => v === "falta").length;
-            return `
-            <div class="card ${faltantes === 0 ? 'completa' : ''}">
-              <button class="card-head" onclick="toggleCard('${code}')">
-                <div>
-                  <div class="name">${name}</div>
-                  <div class="code">${code}</div>
-                </div>
-                <div class="code">${faltantes === 0 ? '🏆 COMPLETA' : 'Faltan ' + faltantes}</div>
-              </button>
-              <div class="body ${isOpen ? 'open' : ''}">
-                <div class="grid">
-                  ${Array.from({ length: TOTAL }, (_, i) => {
-              const n = i + 1;
-              const est = data[code][n];
-              return `<div class="num ${est}" onclick="toggleNum('${code}', ${n})">${n}</div>`;
-            }).join('')}
-                </div>
-                <div style="border-top: 1px solid #666; padding-top:10px;">
-                  <label style="font-size:10px; color:var(--mundial-gold)">Carga rápida repetidas (ej: 1, 5, 12):</label>
-                  <input id="bulk-${code}" class="search" style="margin-top:5px; padding:8px;" placeholder="Números...">
-                  <button class="apply" onclick="applyBulk('${code}')">Aplicar Repetidas</button>
-                </div>
-              </div>
-            </div>
-          `;
-          }).join('')}
+      ${secFiltradas.length === 0 ? '<div class="empty">No hay selecciones que coincidan.</div>' : ''}
+      ${secFiltradas.map(([code, name]) => cardHtml(code, name)).join("")}
     </div>
   `;
 
-      document.getElementById("search").oninput = (e) => { query = e.target.value; render(); };
+      document.getElementById("search").addEventListener("input", e => { query = e.target.value; render(); });
+      document.getElementById("share-falta").addEventListener("click", () => showShareModal("falta"));
+      document.getElementById("share-repe").addEventListener("click", () => showShareModal("repe"));
+      document.querySelectorAll(".tab").forEach(el => {
+        el.addEventListener("click", () => { tab = el.dataset.tab; render(); });
+      });
+      document.querySelectorAll(".card-head").forEach(el => {
+        el.addEventListener("click", () => {
+          const code = el.dataset.code;
+          openCode = openCode === code ? null : code;
+          render();
+        });
+      });
+      document.querySelectorAll(".num").forEach(el => {
+        el.addEventListener("click", () => {
+          const code = el.dataset.code, n = el.dataset.n;
+          const cur = data[code][n];
+          const idx = ESTADOS.indexOf(cur);
+          data[code][n] = ESTADOS[(idx + 1) % ESTADOS.length];
+          persistir();
+          render();
+        });
+      });
+
+      // FIX COMPLETO AL BOTÓN APLICAR DE CARGA RÁPIDA DE REPETIDAS
+      document.querySelectorAll(".apply").forEach(el => {
+        el.addEventListener("click", () => {
+          const code = el.dataset.code;
+          const faltanInput = document.getElementById("faltan-" + code);
+          const repesInput = document.getElementById("repes-" + code);
+          const faltan = parseNumeros(faltanInput.value);
+          const repes = parseNumeros(repesInput.value);
+          const section = { ...data[code] };
+          for (const n of faltan) section[n] = "falta";
+          for (const n of repes) section[n] = "repe"; // Fuerza el estado a repetido directamente
+          data[code] = section;
+          persistir();
+          openCode = code;
+          render();
+        });
+      });
     }
 
-    window.toggleCard = (code) => { openCode = openCode === code ? null : code; render(); };
+    function persistir() {
+      guardarLocal(data);
+      guardarRemoto(data).then(() => {
+        if (!conexionOk) { conexionOk = true; render(); }
+      }).catch(() => {
+        if (conexionOk) { conexionOk = false; render(); }
+      });
+    }
 
-    window.toggleNum = (code, n) => {
-      const cur = data[code][n];
-      if (cur === "falta") data[code][n] = "tengo";
-      else if (cur === "tengo") data[code][n] = "repe";
-      else data[code][n] = "falta";
-      save();
+    function cardHtml(code, name) {
+      const s = statsSeccion(code);
+      const completa = s.falta === 0;
+      const isOpen = openCode === code;
+      let gridHtml = "";
+      for (let n = 1; n <= TOTAL; n++) {
+        const est = data[code][n];
+        gridHtml += `<div class="num ${est}" data-code="${code}" data-n="${n}">${n}</div>`;
+      }
+      return `
+    <div class="card ${completa ? 'completa' : ''}">
+      <button class="card-head" data-code="${code}">
+        <div>
+          <div class="name display">${name}</div>
+          <div class="code data">${code}</div>
+        </div>
+        <div class="badges data">
+          ${s.falta > 0 ? `<span class="badge falta">-${s.falta}</span>` : ''}
+          ${s.repe > 0 ? `<span class="badge repe">x${s.repe}</span>` : ''}
+          ${completa ? '<span class="star">★</span>' : ''}
+          <span style="color:#d4af37; font-size:10px;">${isOpen ? '▲' : '▼'}</span>
+        </div>
+      </button>
+      <div class="body ${isOpen ? 'open' : ''}">
+        <div class="grid">${gridHtml}</div>
+        <div class="hint data">Tocá un número para pasarlo: tengo → falta → repetida</div>
+        <div class="bulk">
+          <label>Cargar de una: números que faltan</label>
+          <input id="faltan-${code}" placeholder="ej: 3, 7, 12, 18" />
+          <label>Números repetidos</label>
+          <input id="repes-${code}" placeholder="ej: 4, 9" />
+          <button class="apply display" data-code="${code}">Aplicar</button>
+        </div>
+      </div>
+    </div>
+  `;
+    }
+
+    function encodeData(type) {
+      const parts = [];
+      for (const [code] of SECCIONES) {
+        const nums = [];
+        for (let n = 1; n <= TOTAL; n++) if (data[code][n] === type) nums.push(n);
+        if (nums.length) parts.push(code + ":" + nums.join(","));
+      }
+      return btoa(unescape(encodeURIComponent(parts.join(";"))));
+    }
+    function decodeData(b64) {
+      const raw = decodeURIComponent(escape(atob(b64)));
+      const result = {};
+      raw.split(";").filter(Boolean).forEach(p => {
+        const [code, nums] = p.split(":");
+        result[code] = nums.split(",").map(Number);
+      });
+      return result;
+    }
+    function buildShareUrl(type) {
+      const base = location.origin + location.pathname;
+      return `${base}#ver=${type}:${encodeData(type)}`;
+    }
+    function showShareModal(type) {
+      const url = buildShareUrl(type);
+      const titulo = type === "falta" ? "Link de figuritas que faltan" : "Link de figuritas repetidas";
+      const bg = document.createElement("div");
+      bg.className = "modal-bg";
+      bg.innerHTML = `
+    <div class="modal">
+      <div class="name display" style="margin-bottom:6px; color:#fff; font-size:18px;">${titulo}</div>
+      <p>Mandaselo a quien quieras. Es de solo lectura, no puede modificar tu álbum.</p>
+      <input readonly id="share-url-input" value="${url}" />
+      <button class="display" id="copy-btn">Copiar link</button>
+    </div>
+  `;
+      document.body.appendChild(bg);
+      bg.addEventListener("click", (e) => { if (e.target === bg) bg.remove(); });
+      const input = bg.querySelector("#share-url-input");
+      bg.querySelector("#copy-btn").addEventListener("click", async () => {
+        input.select();
+        input.setSelectionRange(0, 99999);
+        try {
+          await navigator.clipboard.writeText(url);
+          bg.querySelector("#copy-btn").textContent = "¡Copiado!";
+        } catch (e) {
+          document.execCommand("copy");
+          bg.querySelector("#copy-btn").textContent = "¡Copiado!";
+        }
+        setTimeout(() => bg.remove(), 900);
+      });
+    }
+
+    function renderSharedView(type, encoded) {
+      const nums = decodeData(encoded);
+      const codes = Object.keys(nums);
+      const titulo = type === "falta" ? "Figuritas que faltan" : "Figuritas repetidas";
+      const claseChip = type === "falta" ? "falta" : "repe";
+      const root = document.getElementById("root");
+      root.innerHTML = `
+    <div class="shared-view" style="background:#1e0210; min-height:100vh;">
+      <div class="shared-header" style="background:rgba(42, 3, 21, 0.95); border-bottom:4px solid #d4af37;">
+        <h1 class="display" style="color:#fff;">${titulo}</h1>
+        <div class="data" style="color:#f2d377;font-size:13px;margin-top:4px;">Álbum Mundial 2026 · vista de solo lectura</div>
+      </div>
+      <div class="shared-list" style="padding:16px; max-width:650px; margin:0 auto;">
+        ${codes.length === 0 ? '<div class="empty">No hay figuritas en esta lista.</div>' : ''}
+        ${codes.map(code => {
+        const nombre = (SECCIONES.find(s => s[0] === code) || [code, code])[1];
+        return `
+            <div class="card" style="padding:14px 16px;">
+              <div class="name display" style="font-size:16px;">${nombre}</div>
+              <div class="code data" style="margin-bottom:8px;">${code}</div>
+              <div class="chips" style="display:flex; flex-wrap:wrap; gap:6px;">
+                ${nums[code].map(n => `<span class="num ${claseChip}" style="width:35px; height:35px; cursor:default; transform:none; box-shadow:none;">${n}</span>`).join("")}
+              </div>
+            </div>
+          `;
+      }).join("")}
+      </div>
+      <center><a class="back-link display" style="color:#d4af37; font-weight:700; text-decoration:none;" href="${location.pathname}">Ir al álbum completo</a></center>
+    </div>
+  `;
+    }
+
+    async function sincronizarRemoto(silencioso) {
+      try {
+        const remoto = await cargarRemoto();
+        if (remoto) {
+          if (!silencioso || openCode === null) {
+            data = remoto;
+            guardarLocal(data);
+            if (!conexionOk) { conexionOk = true; }
+            render();
+          }
+        } else {
+          await guardarRemoto(data);
+        }
+        conexionOk = true;
+      } catch (e) {
+        conexionOk = false;
+        if (!silencioso) render();
+      }
+    }
+
+    function init() {
+      const hash = location.hash;
+      const match = hash.match(/^#ver=(falta|repe):(.+)$/);
+      if (match) {
+        renderSharedView(match[1], match[2]);
+        return;
+      }
       render();
-    };
-
-    window.applyBulk = (code) => {
-      const val = document.getElementById("bulk-" + code).value;
-      const nums = val.split(/[,\s]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
-      nums.forEach(n => { if (data[code][n]) data[code][n] = "repe"; });
-      save();
-      render();
-    };
-
-    function save() { localStorage.setItem(KEY, JSON.stringify(data)); }
-
-    render();
+      sincronizarRemoto(false);
+      setInterval(() => sincronizarRemoto(true), 8000);
+    }
+    init();
   </script>
 </body>
 
