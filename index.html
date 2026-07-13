@@ -330,72 +330,88 @@
   `;
     }
 
-    function encodeData(type) {
-      const parts = [];
+    function datosParaCompartir(type) {
+      const result = {};
       for (const [code] of SECCIONES) {
         const nums = [];
         for (let n = 1; n <= TOTAL; n++) if (data[code][n] === type) nums.push(n);
-        if (nums.length) parts.push(code + ":" + nums.join(","));
+        if (nums.length) result[code] = nums;
       }
-      return btoa(unescape(encodeURIComponent(parts.join(";"))));
-    }
-    function decodeData(b64) {
-      const raw = decodeURIComponent(escape(atob(b64)));
-      const result = {};
-      raw.split(";").filter(Boolean).forEach(p => {
-        const [code, nums] = p.split(":");
-        result[code] = nums.split(",").map(Number);
-      });
       return result;
     }
-    function buildShareUrl(type) {
-      const base = location.origin + location.pathname;
-      return `${base}#ver=${type}:${encodeData(type)}`;
+    function idCorto() {
+      return Math.random().toString(36).substring(2, 8);
     }
-    function showShareModal(type) {
-      const url = buildShareUrl(type);
+    async function showShareModal(type) {
       const titulo = type === "falta" ? "Figuritas que te Faltan" : "Figuritas Repetidas";
       const bg = document.createElement("div");
       bg.className = "modal-bg";
       bg.innerHTML = `
     <div class="modal">
-      <div class="name display" style="margin-bottom:6px; font-size: 22px; color: #fff;">${titulo}</div>
-      <p>Copia el siguiente enlace para enviárselo a tus amigos. Es una vista limpia de solo lectura.</p>
-      <input readonly id="share-url-input" value="${url}" />
-      <button class="display" id="copy-btn">Copiar Enlace</button>
+      <div class="name display" style="margin-bottom:6px; font-size: 22px; color: #1c1a16;">${titulo}</div>
+      <p id="share-status">Generando enlace corto...</p>
+      <input readonly id="share-url-input" style="display:none;" />
+      <button class="display" id="copy-btn" style="display:none;">Copiar Enlace</button>
     </div>
   `;
       document.body.appendChild(bg);
       bg.addEventListener("click", (e) => { if (e.target === bg) bg.remove(); });
-      const input = bg.querySelector("#share-url-input");
-      bg.querySelector("#copy-btn").addEventListener("click", async () => {
-        input.select();
-        input.setSelectionRange(0, 99999);
-        try {
-          await navigator.clipboard.writeText(url);
-          bg.querySelector("#copy-btn").textContent = "¡Copiado con éxito!";
-        } catch (e) {
-          document.execCommand("copy");
-          bg.querySelector("#copy-btn").textContent = "¡Copiado con éxito!";
-        }
-        setTimeout(() => bg.remove(), 900);
-      });
+      try {
+        const id = idCorto();
+        const payload = datosParaCompartir(type);
+        await fetch(`${FIREBASE_URL}/shares/${id}.json`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const url = `${location.origin}${location.pathname}#ver=${type}:${id}`;
+        bg.querySelector("#share-status").textContent = "Copiá el siguiente enlace para enviárselo a tus amigos. Es una vista de solo lectura.";
+        const input = bg.querySelector("#share-url-input");
+        input.style.display = "block";
+        input.value = url;
+        const btn = bg.querySelector("#copy-btn");
+        btn.style.display = "block";
+        btn.addEventListener("click", async () => {
+          input.select();
+          input.setSelectionRange(0, 99999);
+          try {
+            await navigator.clipboard.writeText(url);
+            btn.textContent = "¡Copiado con éxito!";
+          } catch (e) {
+            document.execCommand("copy");
+            btn.textContent = "¡Copiado con éxito!";
+          }
+          setTimeout(() => bg.remove(), 900);
+        });
+      } catch (e) {
+        bg.querySelector("#share-status").textContent = "Hubo un error generando el enlace: " + e.message;
+      }
     }
 
-    function renderSharedView(type, encoded) {
-      const nums = decodeData(encoded);
-      const codes = Object.keys(nums);
+    async function renderSharedView(type, id) {
       const titulo = type === "falta" ? "Lista de Faltantes" : "Lista de Repetidas";
       const claseChip = type === "falta" ? "falta" : "repe";
       const root = document.getElementById("root");
       root.innerHTML = `
     <div style="min-height:100vh; background:#F0EAD8; padding-bottom: 40px;">
       <div class="header">
-        <h1 class="display">${titulo}</h1>
+        <h1><span class="badge26"><i></i><i></i><i></i><i></i></span>${titulo}</h1>
         <div class="data" style="color:#f0d998;font-size:13px;margin-top:4px;">Álbum Mundial 2026 · Vista de solo lectura</div>
       </div>
-      <div class="list">
-        ${codes.length === 0 ? '<div class="empty display">No hay figuritas en esta lista pública.</div>' : ''}
+      <div class="list" id="shared-list">
+        <div class="empty display">Cargando...</div>
+      </div>
+    </div>
+  `;
+      let nums = {};
+      try {
+        const res = await fetch(`${FIREBASE_URL}/shares/${id}.json`);
+        nums = (await res.json()) || {};
+      } catch (e) {}
+      const codes = Object.keys(nums);
+      const listEl = document.getElementById("shared-list");
+      listEl.innerHTML = `
+        ${codes.length === 0 ? '<div class="empty display">No hay figuritas en esta lista, o el enlace expiró.</div>' : ''}
         ${codes.map(code => {
         const nombre = (SECCIONES.find(s => s[0] === code) || [code, code])[1];
         return `
@@ -403,15 +419,13 @@
               <div class="name display" style="font-size:18px;">${nombre}</div>
               <div class="code data" style="margin-bottom:8px;">${code}</div>
               <div style="display:flex; flex-wrap:wrap; gap:6px;">
-                ${nums[code].map(n => `<span class="num ${claseChip}" style="width:36px; height:36px; font-size:13px; cursor:default; transform:none; box-shadow:none;">${n}</span>`).join("")}
+                ${nums[code].map(n => `<span class="num ${claseChip}" style="width:36px; height:36px; font-size:13px; cursor:default;">${n}</span>`).join("")}
               </div>
             </div>
           `;
       }).join("")}
-      </div>
-      <center><a class="display" style="color:#8a6d10; font-size:14px; font-weight:700; text-decoration:none;" href="${location.pathname}">Volver a mi Álbum Personal</a></center>
-    </div>
-  `;
+        <center style="margin-top:16px;"><a class="display" style="color:#8a6d10; font-size:14px; font-weight:700; text-decoration:none;" href="${location.pathname}">Volver a mi Álbum Personal</a></center>
+      `;
     }
 
     async function sincronizarRemoto(silencioso) {
