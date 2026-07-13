@@ -236,8 +236,7 @@ function render(){
       const repesInput = document.getElementById("repes-"+code);
       const faltan = parseNumeros(faltanInput.value);
       const repes = parseNumeros(repesInput.value);
-      const section = {};
-      for(let n=1;n<=TOTAL;n++) section[n] = "tengo";
+      const section = { ...data[code] };
       for(const n of faltan) section[n] = "falta";
       for(const n of repes) if(section[n]!=="falta") section[n] = "repe";
       data[code] = section;
