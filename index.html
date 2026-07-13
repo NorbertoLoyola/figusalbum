@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Álbum Mundial 2026</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0f3d2e" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin:0; background:#0f3d2e; color:#f6f1e4; font-family: system-ui, sans-serif; }
+  .display { font-family:'Baloo 2', system-ui, sans-serif; }
+  .data { font-family:'JetBrains Mono', monospace; }
+  .header { position: sticky; top:0; z-index:20; background:rgba(15,61,46,.95); backdrop-filter: blur(6px); border-bottom:4px solid #f2b705; padding:20px 16px 16px; }
+  h1 { font-weight:800; font-size:24px; margin:0; display:flex; align-items:baseline; gap:8px; }
+  .pct { color:#f2b705; font-size:12px; font-weight:700; }
+  .bar { margin-top:8px; height:12px; border-radius:999px; background:#173f31; border:1px solid #2a5c47; overflow:hidden; }
+  .bar-fill { height:100%; background:#f2b705; transition:width .4s; }
+  .stats { margin-top:12px; display:flex; gap:8px; font-size:12px; }
+  .chip { padding:4px 8px; border-radius:6px; }
+  .chip.falta { background:rgba(192,57,43,.2); border:1px solid #c0392b; color:#ff9d8a; }
+  .chip.repe { background:rgba(242,183,5,.2); border:1px solid #f2b705; color:#f2d377; }
+  .chip.tengo { background:rgba(46,125,79,.3); border:1px solid #2e7d4f; color:#a6e3c4; }
+  input.search { margin-top:12px; width:100%; border-radius:8px; background:#173f31; border:1px solid #2a5c47; padding:10px 12px; color:#f6f1e4; font-size:14px; outline:none; }
+  input.search:focus { border-color:#f2b705; }
+  .tabs { margin-top:8px; display:flex; gap:4px; overflow-x:auto; }
+  .tab { flex-shrink:0; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:700; background:#173f31; color:#a6e3c4; border:1px solid #2a5c47; }
+  .tab.active { background:#f2b705; color:#0f3d2e; border-color:#f2b705; }
+  .list { padding:16px; padding-bottom:64px; }
+  .card { border-radius:16px; border:2px solid #2a5c47; background:#12362a; margin-bottom:12px; overflow:hidden; }
+  .card.completa { border-color:#2e7d4f; background:rgba(23,63,49,.6); }
+  .card-head { width:100%; display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:none; border:none; color:inherit; text-align:left; cursor:pointer; }
+  .name { font-weight:700; font-size:18px; line-height:1.1; }
+  .code { font-size:11px; color:#6b9481; letter-spacing:.05em; }
+  .badges { display:flex; align-items:center; gap:8px; font-size:12px; }
+  .badge { padding:4px 8px; border-radius:6px; }
+  .badge.falta { background:rgba(192,57,43,.25); color:#ff9d8a; border:1px solid rgba(192,57,43,.6); }
+  .badge.repe { background:rgba(242,183,5,.25); color:#f2d377; border:1px solid rgba(242,183,5,.6); }
+  .body { padding: 0 16px 16px; display:none; }
+  .body.open { display:block; }
+  .grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:12px; }
+  .num { aspect-ratio:1; border-radius:8px; border:2px solid; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; cursor:pointer; user-select:none; }
+  .num.tengo { background:#0f3d2e; border-color:#2e7d4f; color:#a6e3c4; }
+  .num.falta { background:#c0392b; border-color:#e05c47; color:#fff; }
+  .num.repe { background:#f2b705; border-color:#f6d766; color:#0f3d2e; }
+  .hint { font-size:11px; color:#6b9481; margin-bottom:12px; }
+  .bulk { border-top:1px solid #2a5c47; padding-top:12px; }
+  .bulk label { display:block; font-size:12px; font-weight:700; color:#a6e3c4; margin-bottom:4px; }
+  .bulk input { width:100%; border-radius:8px; background:#0f3d2e; border:1px solid #2a5c47; padding:8px 12px; color:#f6f1e4; font-size:14px; outline:none; margin-bottom:10px; }
+  .bulk input:focus { border-color:#f2b705; }
+  .apply { width:100%; border:none; border-radius:8px; background:#f2b705; color:#0f3d2e; font-weight:800; padding:10px; font-size:14px; cursor:pointer; }
+  .apply:active { transform:scale(.97); }
+  .empty { text-align:center; color:#6b9481; font-size:14px; padding:40px 0; }
+  .star { color:#f2b705; font-size:16px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const SECCIONES = [
+  ["FWC","Copa Mundial"],["MEX","México"],["RSA","Sudáfrica"],["KOR","Corea del Sur"],
+  ["CZE","Rep. Checa"],["CAN","Canadá"],["BIH","Bosnia"],["QAT","Catar"],
+  ["SUI","Suiza"],["BRA","Brasil"],["MAR","Marruecos"],["HAI","Haití"],
+  ["SCO","Escocia"],["USA","Estados Unidos"],["PAR","Paraguay"],["AUS","Australia"],
+  ["TUR","Turquía"],["GER","Alemania"],["CUW","Curazao"],["CIV","Costa de Marfil"],
+  ["ECU","Ecuador"],["NED","Países Bajos"],["JPN","Japón"],["SWE","Suecia"],
+  ["TUN","Túnez"],["BEL","Bélgica"],["EGY","Egipto"],["IRN","Irán"],
+  ["NZL","Nueva Zelanda"],["ESP","España"],["CPV","Cabo Verde"],["KSA","Arabia Saudita"],
+  ["URU","Uruguay"],["FRA","Francia"],["SEN","Senegal"],["IRQ","Irak"],
+  ["NOR","Noruega"],["ARG","Argentina"],["ALG","Argelia"],["AUT","Austria"],
+  ["JOR","Jordania"],["POR","Portugal"],["COD","RD Congo"],["UZB","Uzbekistán"],
+  ["COL","Colombia"],["ENG","Inglaterra"],["CRO","Croacia"],["GHA","Ghana"],
+  ["PAN","Panamá"],["CC","Especiales"]
+];
+const TOTAL = 20;
+const ESTADOS = ["tengo","falta","repe"];
+const KEY = "album-mundial-2026";
+
+function estadoInicial(){
+  const d = {};
+  for(const [code] of SECCIONES){
+    d[code] = {};
+    for(let n=1;n<=TOTAL;n++) d[code][n] = "tengo";
+  }
+  return d;
+}
+function cargar(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return estadoInicial();
+}
+function guardar(data){
+  try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
+}
+function parseNumeros(str){
+  return str.split(/[,\s]+/).map(s=>parseInt(s,10)).filter(n=>!isNaN(n)&&n>=1&&n<=TOTAL);
+}
+
+let data = cargar();
+let openCode = null;
+let query = "";
+let tab = "todas";
+
+function statsGlobales(){
+  let falta=0, repe=0, tengo=0, total=0;
+  for(const [code] of SECCIONES){
+    for(let n=1;n<=TOTAL;n++){
+      total++;
+      const s = data[code][n];
+      if(s==="falta") falta++;
+      else if(s==="repe") repe++;
+      else tengo++;
+    }
+  }
+  return { falta, repe, tengo, total, pct: Math.round((tengo/total)*100) };
+}
+
+function statsSeccion(code){
+  let falta=0, repe=0;
+  for(let n=1;n<=TOTAL;n++){
+    if(data[code][n]==="falta") falta++;
+    if(data[code][n]==="repe") repe++;
+  }
+  return { falta, repe };
+}
+
+function render(){
+  const root = document.getElementById("root");
+  const g = statsGlobales();
+
+  const secFiltradas = SECCIONES.filter(([code,name])=>{
+    const q = query.toLowerCase();
+    const matches = code.toLowerCase().includes(q) || name.toLowerCase().includes(q);
+    if(!matches) return false;
+    const s = statsSeccion(code);
+    if(tab==="falta") return s.falta>0;
+    if(tab==="repe") return s.repe>0;
+    if(tab==="completa") return s.falta===0;
+    return true;
+  });
+
+  root.innerHTML = `
+    <div class="header">
+      <h1>Álbum Mundial 2026 <span class="pct">${g.pct}%</span></h1>
+      <div class="bar"><div class="bar-fill" style="width:${g.pct}%"></div></div>
+      <div class="stats">
+        <span class="chip falta">Faltan ${g.falta}</span>
+        <span class="chip repe">Repetidas ${g.repe}</span>
+        <span class="chip tengo">Tengo ${g.tengo}</span>
+      </div>
+      <input class="search" id="search" placeholder="Buscar selección..." value="${query.replace(/"/g,'&quot;')}" />
+      <div class="tabs">
+        ${[["todas","Todas"],["falta","Con faltantes"],["repe","Con repes"],["completa","Completas"]]
+          .map(([k,l])=>`<button class="tab ${tab===k?'active':''}" data-tab="${k}">${l}</button>`).join("")}
+      </div>
+    </div>
+    <div class="list">
+      ${secFiltradas.length===0 ? '<div class="empty">No hay selecciones que coincidan.</div>' : ''}
+      ${secFiltradas.map(([code,name])=>cardHtml(code,name)).join("")}
+    </div>
+  `;
+
+  document.getElementById("search").addEventListener("input", e=>{ query = e.target.value; render(); });
+  document.querySelectorAll(".tab").forEach(el=>{
+    el.addEventListener("click", ()=>{ tab = el.dataset.tab; render(); });
+  });
+  document.querySelectorAll(".card-head").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const code = el.dataset.code;
+      openCode = openCode===code ? null : code;
+      render();
+    });
+  });
+  document.querySelectorAll(".num").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const code = el.dataset.code, n = el.dataset.n;
+      const cur = data[code][n];
+      const idx = ESTADOS.indexOf(cur);
+      data[code][n] = ESTADOS[(idx+1)%ESTADOS.length];
+      guardar(data);
+      render();
+    });
+  });
+  document.querySelectorAll(".apply").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const code = el.dataset.code;
+      const faltanInput = document.getElementById("faltan-"+code);
+      const repesInput = document.getElementById("repes-"+code);
+      const faltan = parseNumeros(faltanInput.value);
+      const repes = parseNumeros(repesInput.value);
+      const section = {};
+      for(let n=1;n<=TOTAL;n++) section[n] = "tengo";
+      for(const n of faltan) section[n] = "falta";
+      for(const n of repes) if(section[n]!=="falta") section[n] = "repe";
+      data[code] = section;
+      guardar(data);
+      openCode = code;
+      render();
+    });
+  });
+}
+
+function cardHtml(code, name){
+  const s = statsSeccion(code);
+  const completa = s.falta===0;
+  const isOpen = openCode===code;
+  let gridHtml = "";
+  for(let n=1;n<=TOTAL;n++){
+    const est = data[code][n];
+    gridHtml += `<div class="num ${est}" data-code="${code}" data-n="${n}">${n}</div>`;
+  }
+  return `
+    <div class="card ${completa?'completa':''}">
+      <button class="card-head" data-code="${code}">
+        <div>
+          <div class="name display">${name}</div>
+          <div class="code data">${code}</div>
+        </div>
+        <div class="badges data">
+          ${s.falta>0?`<span class="badge falta">-${s.falta}</span>`:''}
+          ${s.repe>0?`<span class="badge repe">x${s.repe}</span>`:''}
+          ${completa?'<span class="star">★</span>':''}
+          <span>${isOpen?'▲':'▼'}</span>
+        </div>
+      </button>
+      <div class="body ${isOpen?'open':''}">
+        <div class="grid">${gridHtml}</div>
+        <div class="hint data">Tocá un número para pasarlo: tengo → falta → repetida</div>
+        <div class="bulk">
+          <label>Cargar de una: números que faltan</label>
+          <input id="faltan-${code}" placeholder="ej: 3, 7, 12, 18" />
+          <label>Números repetidos</label>
+          <input id="repes-${code}" placeholder="ej: 4, 9" />
+          <button class="apply" data-code="${code}">Aplicar</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+render();
+</script>
+</body>
+</html>

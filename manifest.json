@@ -1,0 +1,9 @@
+{
+  "name": "Álbum Mundial 2026",
+  "short_name": "Álbum",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f3d2e",
+  "theme_color": "#0f3d2e",
+  "icons": []
+}
