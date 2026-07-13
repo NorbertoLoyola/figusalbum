@@ -38,14 +38,24 @@ function estadoInicial(){
 
 async function crear(){
   try{
-    const res = await fetch("https://jsonblob.com/api/jsonBlob", {
+    const res = await fetch("https://api.extendsclass.com/json-storage/bin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(estadoInicial())
     });
-    if(!res.ok) throw new Error("No se pudo crear (status " + res.status + ")");
-    const location = res.headers.get("Location");
-    const id = location.split("/").pop();
+    const text = await res.text();
+    let parsed;
+    try{ parsed = JSON.parse(text); }catch(e){ parsed = null; }
+    if(!res.ok){
+      throw new Error("status " + res.status + " - " + text.slice(0,200));
+    }
+    let id = null;
+    if(parsed){
+      if(parsed.uri) id = parsed.uri.split("/").pop();
+      else if(parsed.id) id = parsed.id;
+      else if(parsed.url) id = parsed.url.split("/").pop();
+    }
+    if(!id) throw new Error("Respuesta inesperada: " + text.slice(0,200));
     document.getElementById("status").textContent = "";
     document.getElementById("blob-id").textContent = id;
     document.getElementById("result").style.display = "block";
@@ -54,7 +64,7 @@ async function crear(){
       document.getElementById("copy-btn").textContent = "¡Copiado!";
     });
   }catch(e){
-    document.getElementById("status").innerHTML = '<span class="error">Hubo un error creando el almacén: ' + e.message + '. Probá recargar la página.</span>';
+    document.getElementById("status").innerHTML = '<span class="error">Hubo un error creando el almacén: ' + e.message + '. Sacale una foto a esta pantalla y mandámela.</span>';
   }
 }
 crear();
