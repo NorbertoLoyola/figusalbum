@@ -7,20 +7,42 @@
 <style>
   body { margin:0; background:#0f3d2e; color:#f6f1e4; font-family: system-ui, sans-serif; padding:24px; }
   h1 { font-size:20px; }
+  p { font-size:14px; color:#a6e3c4; line-height:1.5; }
   .box { background:#12362a; border:2px solid #f2b705; border-radius:14px; padding:16px; margin-top:16px; }
-  .id { font-family: monospace; font-size:18px; background:#0f3d2e; padding:12px; border-radius:8px; word-break:break-all; margin:12px 0; border:1px solid #2a5c47; }
-  button { width:100%; border:none; border-radius:8px; padding:12px; background:#f2b705; color:#0f3d2e; font-weight:800; font-size:15px; cursor:pointer; }
-  .status { font-size:14px; color:#a6e3c4; }
+  .id { font-family: monospace; font-size:16px; background:#0f3d2e; padding:12px; border-radius:8px; word-break:break-all; margin:12px 0; border:1px solid #2a5c47; }
+  input[type=email] { width:100%; padding:12px; border-radius:8px; border:1px solid #2a5c47; background:#0f3d2e; color:#f6f1e4; font-size:15px; margin-bottom:10px; box-sizing:border-box; }
+  button { width:100%; border:none; border-radius:8px; padding:12px; background:#f2b705; color:#0f3d2e; font-weight:800; font-size:15px; cursor:pointer; margin-top:8px; }
+  button:disabled { opacity:.5; }
+  .status { font-size:14px; }
   .error { color:#ff9d8a; }
+  .step { display:none; }
+  .step.active { display:block; }
 </style>
 </head>
 <body>
-<h1>Configurando el álbum compartido...</h1>
-<p class="status" id="status">Creando el almacén de datos, esperá un segundo.</p>
-<div class="box" id="result" style="display:none;">
-  <p>Listo. Copiá este código y pasáselo a Claude para terminar la configuración:</p>
-  <div class="id" id="blob-id"></div>
-  <button id="copy-btn">Copiar código</button>
+<h1>Configurar álbum compartido</h1>
+
+<div class="step active" id="step-email">
+  <p>Escribí un mail que puedas revisar ahora (para verificarlo, no crea ninguna cuenta con contraseña).</p>
+  <input type="email" id="email-input" placeholder="tu-email@ejemplo.com" />
+  <button id="crear-btn">Crear almacén compartido</button>
+  <p class="status error" id="email-error"></p>
+</div>
+
+<div class="step" id="step-verificar">
+  <div class="box">
+    <p>Te mandamos un mail de verificación a <b id="email-shown"></b>. Abrilo desde este mismo celular, tocá el link de KVdb, y después volvé acá y tocá el botón.</p>
+    <button id="reintentar-btn">Ya lo verifiqué, reintentar</button>
+    <p class="status error" id="retry-error"></p>
+  </div>
+</div>
+
+<div class="step" id="step-listo">
+  <div class="box">
+    <p>Listo. Copiá este código y pasáselo a Claude:</p>
+    <div class="id" id="blob-id"></div>
+    <button id="copy-btn">Copiar código</button>
+  </div>
 </div>
 
 <script>
@@ -36,63 +58,81 @@ function estadoInicial(){
   return d;
 }
 
-async function tryKvdb(){
-  const createRes = await fetch("https://kvdb.io", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: "email=norberto.figusalbum@example.com"
-  });
-  const bucketId = (await createRes.text()).trim();
-  if(!createRes.ok || !bucketId || bucketId.length > 60) throw new Error("crear bucket: status " + createRes.status + " - " + bucketId.slice(0,150));
-  const putRes = await fetch("https://kvdb.io/" + bucketId + "/data", {
+function showStep(id){
+  document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+let bucketId = null;
+
+async function intentarGuardar(){
+  const res = await fetch("https://kvdb.io/" + bucketId + "/data", {
     method: "POST",
     headers: { "Content-Type": "text/plain" },
     body: JSON.stringify(estadoInicial())
   });
-  const putText = await putRes.text();
-  if(!putRes.ok) throw new Error("guardar datos: status " + putRes.status + " - " + putText.slice(0,150));
-  return { provider: "kvdb", id: bucketId };
+  const text = await res.text();
+  if(!res.ok) throw new Error("status " + res.status + " - " + text.slice(0,200));
+  return true;
 }
 
-async function tryJsonblob(){
-  const res = await fetch("https://jsonblob.com/api/jsonBlob", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(estadoInicial())
-  });
-  if(!res.ok) throw new Error("status " + res.status);
-  const loc = res.headers.get("Location");
-  if(!loc) throw new Error("sin header Location");
-  return { provider: "jsonblob", id: loc.split("/").pop() };
-}
-
-async function crear(){
-  const errores = [];
-  try{
-    const r = await tryKvdb();
-    mostrarExito(r);
+document.getElementById("crear-btn").addEventListener("click", async () => {
+  const email = document.getElementById("email-input").value.trim();
+  const errEl = document.getElementById("email-error");
+  errEl.textContent = "";
+  if(!email || !email.includes("@")){
+    errEl.textContent = "Poné un email válido.";
     return;
-  }catch(e){ errores.push("KVdb: " + e.message); }
-
+  }
+  const btn = document.getElementById("crear-btn");
+  btn.disabled = true;
+  btn.textContent = "Creando...";
   try{
-    const r = await tryJsonblob();
-    mostrarExito(r);
-    return;
-  }catch(e){ errores.push("JSONBlob: " + e.message); }
+    const createRes = await fetch("https://kvdb.io", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "email=" + encodeURIComponent(email)
+    });
+    const id = (await createRes.text()).trim();
+    if(!createRes.ok || !id || id.length > 60) throw new Error("No se pudo crear: " + id.slice(0,150));
+    bucketId = id;
+    try{
+      await intentarGuardar();
+      document.getElementById("blob-id").textContent = "kvdb:" + bucketId;
+      showStep("step-listo");
+    }catch(e){
+      document.getElementById("email-shown").textContent = email;
+      showStep("step-verificar");
+    }
+  }catch(e){
+    errEl.textContent = "Error: " + e.message;
+    btn.disabled = false;
+    btn.textContent = "Crear almacén compartido";
+  }
+});
 
-  document.getElementById("status").innerHTML = '<span class="error">No se pudo crear el almacén con ningún proveedor:<br>' + errores.join('<br>') + '<br><br>Sacale una foto a esta pantalla y mandámela.</span>';
-}
+document.getElementById("reintentar-btn").addEventListener("click", async () => {
+  const btn = document.getElementById("reintentar-btn");
+  const errEl = document.getElementById("retry-error");
+  errEl.textContent = "";
+  btn.disabled = true;
+  btn.textContent = "Probando...";
+  try{
+    await intentarGuardar();
+    document.getElementById("blob-id").textContent = "kvdb:" + bucketId;
+    showStep("step-listo");
+  }catch(e){
+    errEl.textContent = "Todavía no. Verificá el mail y probá de nuevo. (" + e.message + ")";
+    btn.disabled = false;
+    btn.textContent = "Ya lo verifiqué, reintentar";
+  }
+});
 
-function mostrarExito(r){
-  document.getElementById("status").textContent = "";
-  document.getElementById("blob-id").textContent = r.provider + ":" + r.id;
-  document.getElementById("result").style.display = "block";
-  document.getElementById("copy-btn").addEventListener("click", async ()=>{
-    try{ await navigator.clipboard.writeText(r.provider + ":" + r.id); }catch(e){}
-    document.getElementById("copy-btn").textContent = "¡Copiado!";
-  });
-}
-crear();
+document.getElementById("copy-btn").addEventListener("click", async () => {
+  const val = "kvdb:" + bucketId;
+  try{ await navigator.clipboard.writeText(val); }catch(e){}
+  document.getElementById("copy-btn").textContent = "¡Copiado!";
+});
 </script>
 </body>
 </html>
