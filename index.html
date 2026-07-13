@@ -6,444 +6,87 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>Álbum Mundial 2026</title>
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#56042C" />
+  <meta name="theme-color" content="#0a0a0c" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
-
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    /* PALETA DE COLORES PREMIUM MUNDIALISTA (Panini / Qatar Inspired) */
-    body {
-      margin: 0;
-      background: #36021B;
-      /* Guinda ultra profundo de fondo */
-      color: #f6f1e4;
-      font-family: system-ui, sans-serif;
-    }
-
-    .display {
-      font-family: 'Baloo 2', system-ui, sans-serif;
-    }
-
-    .data {
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    /* HEADER ESTILO ALBUM DE LUJO */
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(86, 4, 44, 0.96);
-      backdrop-filter: blur(8px);
-      border-bottom: 4px solid #f2b705;
-      padding: 20px 16px 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    }
-
-    h1 {
-      font-weight: 800;
-      font-size: 24px;
-      margin: 0;
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      color: #fff;
-    }
-
-    .pct {
-      color: #0f3d2e;
-      background: #f2b705;
-      font-size: 13px;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 6px;
-    }
-
-    /* BARRA DE PROGRESO DORADA */
-    .bar {
-      margin-top: 12px;
-      height: 14px;
-      border-radius: 999px;
-      background: #240112;
-      border: 1px solid #56042C;
-      overflow: hidden;
-    }
-
-    .bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #f2b705, #fffbcf);
-      transition: width .4s;
-    }
-
-    /* STICKERS DE ESTADÍSTICAS */
-    .stats {
-      margin-top: 14px;
-      display: flex;
-      gap: 8px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .chip {
-      padding: 6px 12px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .chip.falta {
-      background: #c0392b;
-      border: 1px solid #e05c47;
-      color: #fff;
-    }
-
-    .chip.repe {
-      background: #f2b705;
-      border: 1px solid #f6d766;
-      color: #0f3d2e;
-    }
-
-    .chip.tengo {
-      background: #2e7d4f;
-      border: 1px solid #42b876;
-      color: #fff;
-    }
-
-    /* MOTOR DE BÚSQUEDA Y TABS */
-    input.search {
-      margin-top: 14px;
-      width: 100%;
-      border-radius: 10px;
-      background: #240112;
-      border: 2px solid #56042C;
-      padding: 12px 14px;
-      color: #f6f1e4;
-      font-size: 14px;
-      outline: none;
-      transition: border 0.2s;
-    }
-
-    input.search:focus {
-      border-color: #f2b705;
-      box-shadow: 0 0 8px rgba(242, 183, 5, 0.3);
-    }
-
-    .tabs {
-      margin-top: 10px;
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-    }
-
-    .tab {
-      flex-shrink: 0;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      background: #56042C;
-      color: #f6d766;
-      border: 1px solid #7a1c41;
-      cursor: pointer;
-    }
-
-    .tab.active {
-      background: #f2b705;
-      color: #0f3d2e;
-      border-color: #f2b705;
-      box-shadow: 0 2px 6px rgba(242, 183, 5, 0.3);
-    }
-
-    /* PAGINACIÓN DEL ÁLBUM (SECCIONES) */
-    .list {
-      padding: 16px;
-      padding-bottom: 80px;
-      max-width: 650px;
-      margin: 0 auto;
-    }
-
-    .card {
-      border-radius: 16px;
-      border: 2px solid #56042c;
-      background: #4a0e2e;
-      margin-bottom: 14px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .card.completa {
-      border-color: #f2b705;
-      background: linear-gradient(145deg, #4a0e2e, #5c1239);
-    }
-
-    .card-head {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px;
-      background: none;
-      border: none;
-      color: inherit;
-      text-align: left;
-      cursor: pointer;
-    }
-
-    .name {
-      font-weight: 800;
-      font-size: 20px;
-      color: #fff;
-    }
-
-    .code {
-      font-size: 12px;
-      color: #f2b705;
-      font-weight: 700;
-      letter-spacing: .08em;
-    }
-
-    .badges {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .badge {
-      padding: 4px 8px;
-      border-radius: 6px;
-    }
-
-    .badge.falta {
-      background: #c0392b;
-      color: #fff;
-    }
-
-    .badge.repe {
-      background: #f2b705;
-      color: #0f3d2e;
-    }
-
-    .body {
-      padding: 0 18px 18px;
-      display: none;
-      background: rgba(0, 0, 0, 0.15);
-      border-top: 1px solid rgba(252, 242, 228, 0.05);
-    }
-
-    .body.open {
-      display: block;
-    }
-
-    /* CASILLEROS DEL ÁLBUM DE FIGURITAS */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin-top: 14px;
-      margin-bottom: 14px;
-    }
-
-    .num {
-      aspect-ratio: 1;
-      border-radius: 8px;
-      border: 2px solid;
-      font-weight: 800;
-      font-size: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.15s ease;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Estilo: Casillero Vacío */
-    .num.falta {
-      background: #240112;
-      border-color: #56042c;
-      color: rgba(246, 241, 228, 0.3);
-    }
-
-    /* Estilo: Cromo Pegado Físico */
-    .num.tengo {
-      background: #ffffff;
-      border-color: #d4af37;
-      color: #56042c;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 0 4px rgba(212, 175, 55, 0.4);
-      transform: translateY(-1px);
-    }
-
-    /* Estilo: Cromo Brillante / Especial Repetido */
-    .num.repe {
-      background: linear-gradient(135deg, #f2b705, #f6d766);
-      border-color: #fff;
-      color: #56042c;
-      box-shadow: 0 4px 10px rgba(242, 183, 5, 0.4);
-      transform: translateY(-2px);
-    }
-
-    .hint {
-      font-size: 12px;
-      color: #f6d766;
-      margin-bottom: 14px;
-      text-align: center;
-      font-style: italic;
-    }
-
-    /* SECCIÓN DE CARGA MUNDIALISTA */
-    .bulk {
-      border-top: 1px solid rgba(246, 241, 228, 0.1);
-      padding-top: 14px;
-    }
-
-    .bulk label {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      color: #f6d766;
-      margin-bottom: 6px;
-    }
-
-    .bulk input {
-      width: 100%;
-      border-radius: 8px;
-      background: #240112;
-      border: 1px solid #56042c;
-      padding: 10px 12px;
-      color: #f6f1e4;
-      font-size: 14px;
-      outline: none;
-      margin-bottom: 12px;
-    }
-
-    .bulk input:focus {
-      border-color: #f2b705;
-    }
-
-    .apply {
-      width: 100%;
-      border: none;
-      border-radius: 8px;
-      background: #f2b705;
-      color: #56042c;
-      font-weight: 800;
-      padding: 12px;
-      font-size: 15px;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    }
-
-    .apply:active {
-      transform: scale(.97);
-    }
-
-    .empty {
-      text-align: center;
-      color: #f6d766;
-      font-size: 14px;
-      padding: 40px 0;
-    }
-
-    .star {
-      color: #f2b705;
-      font-size: 16px;
-    }
-
-    /* BOTONES DE COMPARTIR */
-    .share-bar {
-      display: flex;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .share-btn {
-      flex: 1;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 10px;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    }
-
-    .share-btn.falta {
-      background: #c0392b;
-      color: #fff;
-    }
-
-    .share-btn.repe {
-      background: #f2b705;
-      color: #56042c;
-    }
-
-    .share-btn:active {
-      transform: scale(.97);
-    }
-
-    /* MODAL */
-    .modal-bg {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-      padding: 20px;
-      backdrop-filter: blur(4px);
-    }
-
-    .modal {
-      background: #4a0e2e;
-      border: 3px solid #f2b705;
-      border-radius: 16px;
-      padding: 24px;
-      max-width: 400px;
-      width: 100%;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    .modal p {
-      font-size: 14px;
-      color: #f6f1e4;
-      margin-top: 0;
-      line-height: 1.4;
-    }
-
-    .modal input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #56042c;
-      background: #240112;
-      color: #f6f1e4;
-      font-size: 13px;
-      font-family: monospace;
-      margin-bottom: 16px;
-    }
-
-    .modal button {
-      width: 100%;
-      border: none;
-      border-radius: 8px;
-      padding: 12px;
-      background: #f2b705;
-      color: #56042c;
-      font-weight: 800;
-      cursor: pointer;
-      font-size: 15px;
-    }
-  </style>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin:0; background:#0a0a0c; color:#f7f4ec; font-family: 'Archivo', system-ui, sans-serif; }
+  .display { font-family:'Anton', 'Archivo', system-ui, sans-serif; letter-spacing:.02em; }
+  .data { font-family:'JetBrains Mono', monospace; }
+  .header {
+    position: sticky; top:0; z-index:20;
+    background:
+      radial-gradient(circle at 92% 10%, rgba(212,175,55,.10) 0, transparent 40%),
+      repeating-linear-gradient(45deg, rgba(212,175,55,.05) 0 8px, transparent 8px 16px),
+      rgba(10,10,12,.97);
+    backdrop-filter: blur(6px); border-bottom:4px solid #D4AF37; padding:20px 16px 16px;
+  }
+  h1 { font-family:'Anton', 'Archivo', system-ui, sans-serif; text-transform:uppercase; letter-spacing:.03em; font-weight:400; font-size:26px; margin:0; display:flex; align-items:center; gap:10px; }
+  .badge26 { display:flex; flex-direction:column; align-items:center; justify-content:center; width:34px; height:34px; border:2px solid #D4AF37; border-radius:6px; line-height:1; font-family:'Anton',sans-serif; font-size:12px; color:#D4AF37; flex-shrink:0; }
+  .badge26 span { display:block; }
+  .pct { color:#D4AF37; font-size:12px; font-weight:700; }
+  .bar { margin-top:8px; height:12px; border-radius:999px; background:#161512; border:1px solid #3a3527; overflow:hidden; }
+  .bar-fill { height:100%; background:#D4AF37; transition:width .4s; }
+  .stats { margin-top:12px; display:flex; gap:8px; font-size:12px; }
+  .chip { padding:4px 8px; border-radius:6px; }
+  .chip.falta { background:rgba(200,16,46,.2); border:1px solid #c8102e; color:#ff8a75; }
+  .chip.repe { background:rgba(212,175,55,.2); border:1px solid #D4AF37; color:#f0d998; }
+  .chip.tengo { background:rgba(92,86,72,.3); border:1px solid #5c5648; color:#cbb790; }
+  input.search { margin-top:12px; width:100%; border-radius:8px; background:#161512; border:1px solid #3a3527; padding:10px 12px; color:#f7f4ec; font-size:14px; outline:none; }
+  input.search:focus { border-color:#D4AF37; }
+  .tabs { margin-top:8px; display:flex; gap:4px; overflow-x:auto; }
+  .tab { flex-shrink:0; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:700; background:#161512; color:#cbb790; border:1px solid #3a3527; }
+  .tab.active { background:#D4AF37; color:#0a0a0c; border-color:#D4AF37; }
+  .list { padding:16px; padding-bottom:64px; }
+  .card { border-radius:16px; border:2px solid #3a3527; background:#1c1a16; margin-bottom:12px; overflow:hidden; }
+  .card.completa { border-color:#D4AF37; background:rgba(212,175,55,.1); }
+  .card-head { width:100%; display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:none; border:none; color:inherit; text-align:left; cursor:pointer; }
+  .name { font-weight:700; font-size:17px; line-height:1.1; text-transform:uppercase; letter-spacing:.01em; }
+  .code { font-size:11px; color:#726b5c; letter-spacing:.05em; }
+  .badges { display:flex; align-items:center; gap:8px; font-size:12px; }
+  .badge { padding:4px 8px; border-radius:6px; }
+  .badge.falta { background:rgba(200,16,46,.25); color:#ff8a75; border:1px solid rgba(200,16,46,.6); }
+  .badge.repe { background:rgba(212,175,55,.25); color:#f0d998; border:1px solid rgba(212,175,55,.6); }
+  .body { padding: 0 16px 16px; display:none; }
+  .body.open { display:block; }
+  .grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:12px; }
+  .num { aspect-ratio:1; border-radius:8px; border:2px solid; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; cursor:pointer; user-select:none; }
+  .num.tengo { background:#0a0a0c; border-color:#5c5648; color:#cbb790; }
+  .num.falta { background:#c8102e; border-color:#e5534b; color:#fff; }
+  .num.repe { background:#D4AF37; border-color:#f0d998; color:#0a0a0c; }
+  .hint { font-size:11px; color:#726b5c; margin-bottom:12px; }
+  .bulk { border-top:1px solid #3a3527; padding-top:12px; }
+  .bulk label { display:block; font-size:12px; font-weight:700; color:#cbb790; margin-bottom:4px; }
+  .bulk input { width:100%; border-radius:8px; background:#0a0a0c; border:1px solid #3a3527; padding:8px 12px; color:#f7f4ec; font-size:14px; outline:none; margin-bottom:10px; }
+  .bulk input:focus { border-color:#D4AF37; }
+  .apply { width:100%; border:none; border-radius:8px; background:#D4AF37; color:#0a0a0c; font-weight:800; padding:10px; font-size:14px; cursor:pointer; }
+  .apply:active { transform:scale(.97); }
+  .empty { text-align:center; color:#726b5c; font-size:14px; padding:40px 0; }
+  .star { color:#D4AF37; font-size:16px; }
+  .share-bar { display:flex; gap:8px; margin-top:12px; }
+  .share-btn { flex:1; border:none; border-radius:8px; padding:10px 8px; font-size:12px; font-weight:800; cursor:pointer; }
+  .share-btn.falta { background:#c8102e; color:#fff; }
+  .share-btn.repe { background:#D4AF37; color:#0a0a0c; }
+  .share-btn:active { transform:scale(.97); }
+  .shared-view { min-height:100vh; }
+  .shared-header { padding:24px 16px; border-bottom:4px solid #D4AF37; }
+  .shared-list { padding:16px; }
+  .shared-card { border:2px solid #3a3527; border-radius:14px; padding:12px 16px; margin-bottom:10px; background:#1c1a16; }
+  .shared-card .name { font-weight:700; font-size:16px; }
+  .shared-card .code { font-size:11px; color:#726b5c; margin-bottom:8px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip-num { padding:4px 10px; border-radius:6px; font-size:13px; font-weight:700; }
+  .chip-num.falta { background:#c8102e; color:#fff; }
+  .chip-num.repe { background:#D4AF37; color:#0a0a0c; }
+  .back-link { display:inline-block; margin:16px; color:#cbb790; font-size:13px; }
+  .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; z-index:50; padding:20px; }
+  .modal { background:#1c1a16; border:2px solid #D4AF37; border-radius:14px; padding:20px; max-width:400px; width:100%; }
+  .modal p { font-size:13px; color:#cbb790; margin-top:0; }
+  .modal input { width:100%; padding:10px; border-radius:8px; border:1px solid #3a3527; background:#0a0a0c; color:#f7f4ec; font-size:12px; font-family:monospace; margin-bottom:12px; }
+  .modal button { width:100%; border:none; border-radius:8px; padding:10px; background:#D4AF37; color:#0a0a0c; font-weight:800; cursor:pointer; }
+</style>
+</style>
 </head>
 
 <body>
@@ -470,14 +113,9 @@
 
     const FIREBASE_URL = "https://figusalbum-72bc0-default-rtdb.firebaseio.com";
 
-    // SOLUCIÓN AL APARTADO DE PRIVACIDAD: Genera un ID exclusivo por dispositivo celular/PC
+    // Ruta compartida única: los tres celulares leen y escriben el mismo lugar
     function obtenerUrlRemota() {
-      let userId = localStorage.getItem("album_user_id");
-      if (!userId) {
-        userId = "user_" + Math.random().toString(36).substring(2, 11);
-        localStorage.setItem("album_user_id", userId);
-      }
-      return `${FIREBASE_URL}/${userId}.json`;
+      return `${FIREBASE_URL}/data.json`;
     }
 
     function estadoInicial() {
@@ -564,8 +202,8 @@
 
       root.innerHTML = `
     <div class="header">
-      <h1 class="display">Álbum Mundial 2026 <span class="pct">${g.pct}%</span></h1>
-      <div class="data" style="font-size:11px; margin-top:4px; color:${conexionOk ? '#f6d766' : '#ff9d8a'};">
+      <h1><span class="badge26"><span>2</span><span>6</span></span>Álbum Mundial <span class="pct">${g.pct}%</span></h1>
+      <div class="data" style="font-size:11px; margin-top:4px; color:${conexionOk ? '#f0d998' : '#ff8a75'};">
         ${conexionOk ? '● Álbum Sincronizado en la Nube' : '○ Sin conexión (guardando local)'}
       </div>
       <div class="bar"><div class="bar-fill" style="width:${g.pct}%"></div></div>
@@ -664,7 +302,7 @@
           ${s.falta > 0 ? `<span class="badge falta">-${s.falta}</span>` : ''}
           ${s.repe > 0 ? `<span class="badge repe">x${s.repe}</span>` : ''}
           ${completa ? '<span class="star">★</span>' : ''}
-          <span style="color:#f2b705; font-size: 10px;">${isOpen ? '▲' : '▼'}</span>
+          <span style="color:#D4AF37; font-size: 10px;">${isOpen ? '▲' : '▼'}</span>
         </div>
       </button>
       <div class="body ${isOpen ? 'open' : ''}">
@@ -741,10 +379,10 @@
       const claseChip = type === "falta" ? "falta" : "repe";
       const root = document.getElementById("root");
       root.innerHTML = `
-    <div style="min-height:100vh; background:#36021B; padding-bottom: 40px;">
+    <div style="min-height:100vh; background:#0a0a0c; padding-bottom: 40px;">
       <div class="header">
         <h1 class="display">${titulo}</h1>
-        <div class="data" style="color:#f6d766;font-size:13px;margin-top:4px;">Álbum Mundial 2026 · Vista de solo lectura</div>
+        <div class="data" style="color:#f0d998;font-size:13px;margin-top:4px;">Álbum Mundial 2026 · Vista de solo lectura</div>
       </div>
       <div class="list">
         ${codes.length === 0 ? '<div class="empty display">No hay figuritas en esta lista pública.</div>' : ''}
@@ -761,7 +399,7 @@
           `;
       }).join("")}
       </div>
-      <center><a class="display" style="color:#f2b705; font-size:14px; font-weight:700; text-decoration:none;" href="${location.pathname}">Volver a mi Álbum Personal</a></center>
+      <center><a class="display" style="color:#D4AF37; font-size:14px; font-weight:700; text-decoration:none;" href="${location.pathname}">Volver a mi Álbum Personal</a></center>
     </div>
   `;
     }
