@@ -45,11 +45,12 @@ async function tryKvdb(){
   const bucketId = (await createRes.text()).trim();
   if(!createRes.ok || !bucketId || bucketId.length > 60) throw new Error("crear bucket: status " + createRes.status + " - " + bucketId.slice(0,150));
   const putRes = await fetch("https://kvdb.io/" + bucketId + "/data", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    method: "POST",
+    headers: { "Content-Type": "text/plain" },
     body: JSON.stringify(estadoInicial())
   });
-  if(!putRes.ok) throw new Error("guardar datos: status " + putRes.status);
+  const putText = await putRes.text();
+  if(!putRes.ok) throw new Error("guardar datos: status " + putRes.status + " - " + putText.slice(0,150));
   return { provider: "kvdb", id: bucketId };
 }
 
