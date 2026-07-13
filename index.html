@@ -98,6 +98,8 @@ const TOTAL = 20;
 const ESTADOS = ["tengo","falta","repe"];
 const KEY = "album-mundial-2026";
 
+const FIREBASE_URL = "https://figusalbum-72bc0-default-rtdb.firebaseio.com";
+
 function estadoInicial(){
   const d = {};
   for(const [code] of SECCIONES){
@@ -106,24 +108,37 @@ function estadoInicial(){
   }
   return d;
 }
-function cargar(){
+function cargarLocal(){
   try{
     const raw = localStorage.getItem(KEY);
     if(raw) return JSON.parse(raw);
   }catch(e){}
-  return estadoInicial();
+  return null;
 }
-function guardar(data){
+function guardarLocal(data){
   try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
+}
+async function cargarRemoto(){
+  const res = await fetch(FIREBASE_URL + "/data.json");
+  if(!res.ok) throw new Error("status " + res.status);
+  return await res.json();
+}
+async function guardarRemoto(data){
+  await fetch(FIREBASE_URL + "/data.json", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
 }
 function parseNumeros(str){
   return str.split(/[,\s]+/).map(s=>parseInt(s,10)).filter(n=>!isNaN(n)&&n>=1&&n<=TOTAL);
 }
 
-let data = cargar();
+let data = cargarLocal() || estadoInicial();
 let openCode = null;
 let query = "";
 let tab = "todas";
+let conexionOk = true;
 
 function statsGlobales(){
   let falta=0, repe=0, tengo=0, total=0;
@@ -166,6 +181,9 @@ function render(){
   root.innerHTML = `
     <div class="header">
       <h1>Álbum Mundial 2026 <span class="pct">${g.pct}%</span></h1>
+      <div class="data" style="font-size:11px; margin-top:2px; color:${conexionOk?'#a6e3c4':'#ff9d8a'};">
+        ${conexionOk ? '● Sincronizado' : '○ Sin conexión (se guardó solo en este celular)'}
+      </div>
       <div class="bar"><div class="bar-fill" style="width:${g.pct}%"></div></div>
       <div class="stats">
         <span class="chip falta">Faltan ${g.falta}</span>
@@ -207,7 +225,7 @@ function render(){
       const cur = data[code][n];
       const idx = ESTADOS.indexOf(cur);
       data[code][n] = ESTADOS[(idx+1)%ESTADOS.length];
-      guardar(data);
+      persistir();
       render();
     });
   });
@@ -223,10 +241,19 @@ function render(){
       for(const n of faltan) section[n] = "falta";
       for(const n of repes) if(section[n]!=="falta") section[n] = "repe";
       data[code] = section;
-      guardar(data);
+      persistir();
       openCode = code;
       render();
     });
+  });
+}
+
+function persistir(){
+  guardarLocal(data);
+  guardarRemoto(data).then(()=>{
+    if(!conexionOk){ conexionOk = true; render(); }
+  }).catch(()=>{
+    if(conexionOk){ conexionOk = false; render(); }
   });
 }
 
@@ -352,14 +379,36 @@ function renderSharedView(type, encoded){
   `;
 }
 
+async function sincronizarRemoto(silencioso){
+  try{
+    const remoto = await cargarRemoto();
+    if(remoto){
+      if(!silencioso || openCode===null){
+        data = remoto;
+        guardarLocal(data);
+        if(!conexionOk){ conexionOk = true; }
+        render();
+      }
+    } else {
+      await guardarRemoto(data);
+    }
+    conexionOk = true;
+  }catch(e){
+    conexionOk = false;
+    if(!silencioso) render();
+  }
+}
+
 function init(){
   const hash = location.hash;
   const match = hash.match(/^#ver=(falta|repe):(.+)$/);
   if(match){
     renderSharedView(match[1], match[2]);
-  } else {
-    render();
+    return;
   }
+  render();
+  sincronizarRemoto(false);
+  setInterval(()=> sincronizarRemoto(true), 8000);
 }
 init();
 </script>
