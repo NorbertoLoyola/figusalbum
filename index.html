@@ -51,12 +51,18 @@
     .badge.repe { background:#FEF3D6; color:#8a6d10; border:1px solid #D4AF37; }
     .body { padding: 0 16px 16px; display:none; }
     .body.open { display:block; }
-    .grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:12px; }
-    .num { aspect-ratio:1; border-radius:8px; border:2px solid; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; cursor:pointer; user-select:none; }
+    .grid { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:10px; }
+    .num { aspect-ratio:1; border-radius:6px; border:1.5px solid; font-weight:700; font-size:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; user-select:none; }
     .num.tengo { background:#F0EAD8; border-color:#c9bfa0; color:#6b6555; }
     .num.falta { background:#D4372B; border-color:#a30f22; color:#fff; }
     .num.repe { background:#D4AF37; border-color:#8a6d10; color:#141414; }
     .hint { font-size:11px; color:#9a9384; margin-bottom:12px; }
+    .legend { display:flex; gap:14px; font-size:11px; color:#6b6555; margin-bottom:10px; flex-wrap:wrap; }
+    .legend span { display:inline-flex; align-items:center; gap:5px; }
+    .legend i { width:12px; height:12px; border-radius:3px; display:inline-block; border:1.5px solid; }
+    .legend i.tengo { background:#F0EAD8; border-color:#c9bfa0; }
+    .legend i.falta { background:#D4372B; border-color:#a30f22; }
+    .legend i.repe { background:#D4AF37; border-color:#8a6d10; }
     .bulk { border-top:1px solid #eee3c8; padding-top:12px; }
     .bulk label { display:block; font-size:12px; font-weight:700; color:#6b6555; margin-bottom:4px; }
     .bulk input { width:100%; border-radius:8px; background:#F0EAD8; border:1px solid #ddd3b8; padding:8px 12px; color:#1c1a16; font-size:14px; outline:none; margin-bottom:10px; }
@@ -306,7 +312,12 @@
       </button>
       <div class="body ${isOpen ? 'open' : ''}">
         <div class="grid">${gridHtml}</div>
-        <div class="hint data">Modo manual: Toca un número para alternar (Tengo → Falta → Repetida)</div>
+        <div class="legend data">
+          <span><i class="tengo"></i>Tengo</span>
+          <span><i class="falta"></i>Falta</span>
+          <span><i class="repe"></i>Repetida</span>
+        </div>
+        <div class="hint data">Tocá un número para pasar: Tengo → Falta → Repetida</div>
         <div class="bulk">
           <label>Cargar en lote: Números que te FALTAN</label>
           <input id="faltan-${code}" placeholder="ej: 3, 7, 12, 18" />
