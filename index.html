@@ -53,6 +53,27 @@
   .apply:active { transform:scale(.97); }
   .empty { text-align:center; color:#6b9481; font-size:14px; padding:40px 0; }
   .star { color:#f2b705; font-size:16px; }
+  .share-bar { display:flex; gap:8px; margin-top:12px; }
+  .share-btn { flex:1; border:none; border-radius:8px; padding:10px 8px; font-size:12px; font-weight:800; cursor:pointer; }
+  .share-btn.falta { background:#c0392b; color:#fff; }
+  .share-btn.repe { background:#f2b705; color:#0f3d2e; }
+  .share-btn:active { transform:scale(.97); }
+  .shared-view { min-height:100vh; }
+  .shared-header { padding:24px 16px; border-bottom:4px solid #f2b705; }
+  .shared-list { padding:16px; }
+  .shared-card { border:2px solid #2a5c47; border-radius:14px; padding:12px 16px; margin-bottom:10px; background:#12362a; }
+  .shared-card .name { font-weight:700; font-size:16px; }
+  .shared-card .code { font-size:11px; color:#6b9481; margin-bottom:8px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip-num { padding:4px 10px; border-radius:6px; font-size:13px; font-weight:700; }
+  .chip-num.falta { background:#c0392b; color:#fff; }
+  .chip-num.repe { background:#f2b705; color:#0f3d2e; }
+  .back-link { display:inline-block; margin:16px; color:#a6e3c4; font-size:13px; }
+  .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; z-index:50; padding:20px; }
+  .modal { background:#12362a; border:2px solid #f2b705; border-radius:14px; padding:20px; max-width:400px; width:100%; }
+  .modal p { font-size:13px; color:#a6e3c4; margin-top:0; }
+  .modal input { width:100%; padding:10px; border-radius:8px; border:1px solid #2a5c47; background:#0f3d2e; color:#f6f1e4; font-size:12px; font-family:monospace; margin-bottom:12px; }
+  .modal button { width:100%; border:none; border-radius:8px; padding:10px; background:#f2b705; color:#0f3d2e; font-weight:800; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -156,6 +177,10 @@ function render(){
         ${[["todas","Todas"],["falta","Con faltantes"],["repe","Con repes"],["completa","Completas"]]
           .map(([k,l])=>`<button class="tab ${tab===k?'active':''}" data-tab="${k}">${l}</button>`).join("")}
       </div>
+      <div class="share-bar">
+        <button class="share-btn falta" id="share-falta">🔗 Compartir lo que falta</button>
+        <button class="share-btn repe" id="share-repe">🔗 Compartir repetidas</button>
+      </div>
     </div>
     <div class="list">
       ${secFiltradas.length===0 ? '<div class="empty">No hay selecciones que coincidan.</div>' : ''}
@@ -164,6 +189,8 @@ function render(){
   `;
 
   document.getElementById("search").addEventListener("input", e=>{ query = e.target.value; render(); });
+  document.getElementById("share-falta").addEventListener("click", ()=> showShareModal("falta"));
+  document.getElementById("share-repe").addEventListener("click", ()=> showShareModal("repe"));
   document.querySelectorAll(".tab").forEach(el=>{
     el.addEventListener("click", ()=>{ tab = el.dataset.tab; render(); });
   });
@@ -241,7 +268,100 @@ function cardHtml(code, name){
   `;
 }
 
-render();
+function encodeData(type){
+  const parts = [];
+  for(const [code] of SECCIONES){
+    const nums = [];
+    for(let n=1;n<=TOTAL;n++) if(data[code][n]===type) nums.push(n);
+    if(nums.length) parts.push(code+":"+nums.join(","));
+  }
+  return btoa(unescape(encodeURIComponent(parts.join(";"))));
+}
+function decodeData(b64){
+  const raw = decodeURIComponent(escape(atob(b64)));
+  const result = {};
+  raw.split(";").filter(Boolean).forEach(p=>{
+    const [code, nums] = p.split(":");
+    result[code] = nums.split(",").map(Number);
+  });
+  return result;
+}
+function buildShareUrl(type){
+  const base = location.origin + location.pathname;
+  return `${base}#ver=${type}:${encodeData(type)}`;
+}
+function showShareModal(type){
+  const url = buildShareUrl(type);
+  const titulo = type==="falta" ? "Link de figuritas que faltan" : "Link de figuritas repetidas";
+  const bg = document.createElement("div");
+  bg.className = "modal-bg";
+  bg.innerHTML = `
+    <div class="modal">
+      <div class="name display" style="margin-bottom:6px;">${titulo}</div>
+      <p>Mandaselo a quien quieras. Es de solo lectura, no puede modificar tu álbum.</p>
+      <input readonly id="share-url-input" value="${url}" />
+      <button id="copy-btn">Copiar link</button>
+    </div>
+  `;
+  document.body.appendChild(bg);
+  bg.addEventListener("click", (e)=>{ if(e.target===bg) bg.remove(); });
+  const input = bg.querySelector("#share-url-input");
+  bg.querySelector("#copy-btn").addEventListener("click", async ()=>{
+    input.select();
+    input.setSelectionRange(0, 99999);
+    try{
+      await navigator.clipboard.writeText(url);
+      bg.querySelector("#copy-btn").textContent = "¡Copiado!";
+    }catch(e){
+      document.execCommand("copy");
+      bg.querySelector("#copy-btn").textContent = "¡Copiado!";
+    }
+    setTimeout(()=> bg.remove(), 900);
+  });
+}
+
+function renderSharedView(type, encoded){
+  const nums = decodeData(encoded);
+  const codes = Object.keys(nums);
+  const titulo = type==="falta" ? "Figuritas que faltan" : "Figuritas repetidas";
+  const claseChip = type==="falta" ? "falta" : "repe";
+  const root = document.getElementById("root");
+  root.innerHTML = `
+    <div class="shared-view">
+      <div class="shared-header">
+        <h1 class="display">${titulo}</h1>
+        <div class="data" style="color:#a6e3c4;font-size:13px;margin-top:4px;">Álbum Mundial 2026 · vista de solo lectura</div>
+      </div>
+      <div class="shared-list">
+        ${codes.length===0 ? '<div class="empty">No hay figuritas en esta lista.</div>' : ''}
+        ${codes.map(code=>{
+          const nombre = (SECCIONES.find(s=>s[0]===code)||[code,code])[1];
+          return `
+            <div class="shared-card">
+              <div class="name display">${nombre}</div>
+              <div class="code data">${code}</div>
+              <div class="chips">
+                ${nums[code].map(n=>`<span class="chip-num ${claseChip}">${n}</span>`).join("")}
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+      <a class="back-link" href="${location.pathname}">Ir al álbum completo</a>
+    </div>
+  `;
+}
+
+function init(){
+  const hash = location.hash;
+  const match = hash.match(/^#ver=(falta|repe):(.+)$/);
+  if(match){
+    renderSharedView(match[1], match[2]);
+  } else {
+    render();
+  }
+}
+init();
 </script>
 </body>
 </html>
