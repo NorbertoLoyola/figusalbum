@@ -36,36 +36,60 @@ function estadoInicial(){
   return d;
 }
 
+async function tryKvdb(){
+  const createRes = await fetch("https://kvdb.io", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "email=norberto.figusalbum@example.com"
+  });
+  const bucketId = (await createRes.text()).trim();
+  if(!createRes.ok || !bucketId || bucketId.length > 60) throw new Error("crear bucket: status " + createRes.status + " - " + bucketId.slice(0,150));
+  const putRes = await fetch("https://kvdb.io/" + bucketId + "/data", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(estadoInicial())
+  });
+  if(!putRes.ok) throw new Error("guardar datos: status " + putRes.status);
+  return { provider: "kvdb", id: bucketId };
+}
+
+async function tryJsonblob(){
+  const res = await fetch("https://jsonblob.com/api/jsonBlob", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(estadoInicial())
+  });
+  if(!res.ok) throw new Error("status " + res.status);
+  const loc = res.headers.get("Location");
+  if(!loc) throw new Error("sin header Location");
+  return { provider: "jsonblob", id: loc.split("/").pop() };
+}
+
 async function crear(){
+  const errores = [];
   try{
-    const res = await fetch("https://api.extendsclass.com/json-storage/bin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(estadoInicial())
-    });
-    const text = await res.text();
-    let parsed;
-    try{ parsed = JSON.parse(text); }catch(e){ parsed = null; }
-    if(!res.ok){
-      throw new Error("status " + res.status + " - " + text.slice(0,200));
-    }
-    let id = null;
-    if(parsed){
-      if(parsed.uri) id = parsed.uri.split("/").pop();
-      else if(parsed.id) id = parsed.id;
-      else if(parsed.url) id = parsed.url.split("/").pop();
-    }
-    if(!id) throw new Error("Respuesta inesperada: " + text.slice(0,200));
-    document.getElementById("status").textContent = "";
-    document.getElementById("blob-id").textContent = id;
-    document.getElementById("result").style.display = "block";
-    document.getElementById("copy-btn").addEventListener("click", async ()=>{
-      try{ await navigator.clipboard.writeText(id); }catch(e){}
-      document.getElementById("copy-btn").textContent = "¡Copiado!";
-    });
-  }catch(e){
-    document.getElementById("status").innerHTML = '<span class="error">Hubo un error creando el almacén: ' + e.message + '. Sacale una foto a esta pantalla y mandámela.</span>';
-  }
+    const r = await tryKvdb();
+    mostrarExito(r);
+    return;
+  }catch(e){ errores.push("KVdb: " + e.message); }
+
+  try{
+    const r = await tryJsonblob();
+    mostrarExito(r);
+    return;
+  }catch(e){ errores.push("JSONBlob: " + e.message); }
+
+  document.getElementById("status").innerHTML = '<span class="error">No se pudo crear el almacén con ningún proveedor:<br>' + errores.join('<br>') + '<br><br>Sacale una foto a esta pantalla y mandámela.</span>';
+}
+
+function mostrarExito(r){
+  document.getElementById("status").textContent = "";
+  document.getElementById("blob-id").textContent = r.provider + ":" + r.id;
+  document.getElementById("result").style.display = "block";
+  document.getElementById("copy-btn").addEventListener("click", async ()=>{
+    try{ await navigator.clipboard.writeText(r.provider + ":" + r.id); }catch(e){}
+    document.getElementById("copy-btn").textContent = "¡Copiado!";
+  });
 }
 crear();
 </script>
