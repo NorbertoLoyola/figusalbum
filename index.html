@@ -233,7 +233,14 @@
     </div>
   `;
 
-      document.getElementById("search").addEventListener("input", e => { query = e.target.value; render(); });
+      document.getElementById("search").addEventListener("input", e => {
+        query = e.target.value;
+        const cursorPos = e.target.selectionStart;
+        render();
+        const nuevoInput = document.getElementById("search");
+        nuevoInput.focus();
+        nuevoInput.setSelectionRange(cursorPos, cursorPos);
+      });
       document.getElementById("share-falta").addEventListener("click", () => showShareModal("falta"));
       document.getElementById("share-repe").addEventListener("click", () => showShareModal("repe"));
       document.querySelectorAll(".tab").forEach(el => {
